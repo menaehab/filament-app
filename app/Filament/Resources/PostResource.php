@@ -8,7 +8,9 @@ use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Checkbox;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -33,13 +35,21 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('title')->required()->maxLength(255),
-                ColorPicker::make('color'),
-                TagsInput::make('tags')->columnSpan('full'),
-                Select::make('category_id')->relationship('category', 'name')->required()->label('Category')->columnSpan('full'),
-                FileUpload::make('thumbnail')->disk('public')->directory('thumbnails')->columnSpan('full'),
-                MarkdownEditor::make('content')->required()->columnSpan('full'),
-                Checkbox::make('published'),
+                Section::make()->schema([
+                    Section::make()->schema([
+                        Group::make()->schema([
+                            TextInput::make('title')->required()->maxLength(255),
+                            ColorPicker::make('color'),
+                            Select::make('category_id')->relationship('category', 'name')->required()->label('Category')->columnSpan('full'),
+                            MarkdownEditor::make('content')->required()->columnSpan('full'),
+                        ]),
+                    ])->columnSpan(2),
+                    Section::make()->schema([
+                        FileUpload::make('thumbnail')->disk('public')->directory('thumbnails')->columnSpan('full'),
+                        TagsInput::make('tags')->columnSpan('full'),
+                        Checkbox::make('published'),
+                    ])->columnSpan(1),
+                ])->columns(3),
             ]);
     }
 
