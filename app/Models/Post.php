@@ -6,16 +6,20 @@ use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class Post extends Model
 {
     use HasSlug;
-
     protected $guarded = ['id'];
+
+    protected $casts = [
+        'published' => 'boolean',
+        'tags' => 'array',
+    ];
 
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom('name')
+            ->generateSlugsFrom('title')
             ->saveSlugsTo('slug');
     }
 
@@ -24,8 +28,9 @@ class Category extends Model
         return 'slug';
     }
 
-    public function posts()
+    public function category()
     {
-        return $this->hasMany(Post::class);
+        return $this->belongsTo(Category::class);
     }
+
 }
