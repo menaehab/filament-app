@@ -6,12 +6,17 @@ use Filament\Forms;
 use App\Models\Post;
 use Filament\Tables;
 use Filament\Forms\Form;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Tabs;
+use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TagsInput;
@@ -22,6 +27,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\MarkdownEditor;
 use App\Filament\Resources\PostResource\Pages;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PostResource\RelationManagers\UsersRelationManager;
 
@@ -35,6 +41,7 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
+
                 Section::make()->schema([
 
                     Section::make()->schema([
@@ -73,7 +80,8 @@ class PostResource extends Resource
                     ->searchable()->sortable()->toggleable(),
             ])
             ->filters([
-                //
+                TernaryFilter::make('published')->label('Published'),
+                SelectFilter::make('category')->relationship('category', 'name')->preload()->searchable()->multiple()->label('Category'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
