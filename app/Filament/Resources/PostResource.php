@@ -23,7 +23,7 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\MarkdownEditor;
 use App\Filament\Resources\PostResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PostResource\RelationManagers;
+use App\Filament\Resources\PostResource\RelationManagers\UsersRelationManager;
 
 class PostResource extends Resource
 {
@@ -90,7 +90,7 @@ class PostResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            UsersRelationManager::class,
         ];
     }
 
