@@ -36,6 +36,7 @@ class PostResource extends Resource
         return $form
             ->schema([
                 Section::make()->schema([
+
                     Section::make()->schema([
                         Group::make()->schema([
                             TextInput::make('title')->required()->rules('required|max:255')->maxLength(255),
@@ -44,10 +45,13 @@ class PostResource extends Resource
                             MarkdownEditor::make('content')->required()->rules('required')->columnSpan('full'),
                         ]),
                     ])->columnSpan(2),
+
                     Section::make()->schema([
                         FileUpload::make('thumbnail')->disk('public')->directory('thumbnails')->rules('image')->columnSpan('full'),
                         TagsInput::make('tags')->columnSpan('full'),
+                        Select::make('users')->relationship('users', 'name')->rules('required|exists:users,id')->required()->label('Author')->multiple(),
                         Checkbox::make('published'),
+
                     ])->columnSpan(1),
                 ])->columns(3),
             ]);

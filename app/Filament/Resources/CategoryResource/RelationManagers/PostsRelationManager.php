@@ -42,6 +42,7 @@ class PostsRelationManager extends RelationManager
                     Section::make()->schema([
                         FileUpload::make('thumbnail')->disk('public')->directory('thumbnails')->rules('image')->columnSpan('full'),
                         TagsInput::make('tags')->columnSpan('full'),
+                        Select::make('users')->relationship('users', 'name')->rules('required|exists:users,id')->required()->label('Author')->multiple(),
                         Checkbox::make('published'),
                     ])->columnSpan(1),
                 ])->columns(3),
