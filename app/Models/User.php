@@ -63,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Post::class, 'post_user')->withTimestamps();
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
