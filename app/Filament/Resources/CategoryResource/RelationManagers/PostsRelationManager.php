@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CategoryResource\RelationManagers;
 
 use Filament\Forms;
-use App\Models\Post;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Filament\Resources\Resource;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
@@ -19,47 +17,42 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\MarkdownEditor;
-use App\Filament\Resources\PostResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\PostResource\RelationManagers\UsersRelationManager;
+use Filament\Resources\RelationManagers\RelationManager;
 
-class PostResource extends Resource
+class PostsRelationManager extends RelationManager
 {
-    protected static ?string $model = Post::class;
+    protected static string $relationship = 'posts';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Section::make()->schema([
-
                     Section::make()->schema([
                         Group::make()->schema([
                             TextInput::make('title')->required()->rules('required|max:255')->maxLength(255),
                             ColorPicker::make('color')->rules('required|max:255'),
-                            Select::make('category_id')->relationship('category', 'name')->rules('required|exists:categories,id')->required()->label('Category')->columnSpan('full'),
                             MarkdownEditor::make('content')->required()->rules('required')->columnSpan('full'),
                         ]),
                     ])->columnSpan(2),
-
                     Section::make()->schema([
                         FileUpload::make('thumbnail')->disk('public')->directory('thumbnails')->rules('image')->columnSpan('full'),
                         TagsInput::make('tags')->columnSpan('full'),
                         Select::make('users')->relationship('users', 'name')->rules('required|exists:users,id')->required()->label('Author')->multiple(),
                         Checkbox::make('published'),
-
                     ])->columnSpan(1),
                 ])->columns(3),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('title')
             ->columns([
                 TextColumn::make('title')
                     ->searchable()->sortable()->toggleable(),
@@ -69,14 +62,14 @@ class PostResource extends Resource
                     ->searchable()->sortable()->toggleable(),
                 IconColumn::make('published')
                     ->searchable()->sortable()->toggleable(),
-                TextColumn::make('category.name')
-                    ->searchable()->sortable()->toggleable(),
             ])
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+            ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -85,21 +78,5 @@ class PostResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            UsersRelationManager::class,
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListPosts::route('/'),
-            'create' => Pages\CreatePost::route('/create'),
-            'edit' => Pages\EditPost::route('/{record}/edit'),
-        ];
     }
 }
